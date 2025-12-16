@@ -1,4 +1,4 @@
-package com.github.tluccas.book_inventory.dto;
+package com.github.tluccas.book_inventory.dto.Loan;
 import com.github.tluccas.book_inventory.database.model.Emprestimo.BookOnLoan;
 import java.util.List;
 import java.time.LocalDate;
