@@ -14,6 +14,7 @@ import java.util.List;
 public class BookService {
     
     private final DocumentStore store;
+    private static final String BOOK_PREFIX = "books/";
 
     public BookService(DocumentStore store){
         this.store = store;
@@ -34,14 +35,18 @@ public class BookService {
     }
 
     public Book findById(String id){
+        String fullId = BOOK_PREFIX + id;
+
         try (IDocumentSession session = store.openSession()) {
-            return session.load(Book.class, id);
+            return session.load(Book.class, fullId);
         }
     }
 
     public Book update(String id, Book data) {
+        String fullId = BOOK_PREFIX + id;
+
         try (IDocumentSession session = store.openSession()) {
-            Book existingBook = session.load(Book.class, id);
+            Book existingBook = session.load(Book.class, fullId);
             if (existingBook == null) {
                 throw new NotFoundException("Livro não encontrado: " + id);
             }
@@ -56,8 +61,10 @@ public class BookService {
     }
 
     public void delete(String id) {
+        String fullId = BOOK_PREFIX + id;
+
         try(IDocumentSession session = store.openSession()) {
-            Book existingBook = session.load(Book.class, id);
+            Book existingBook = session.load(Book.class, fullId);
             if (existingBook == null) {
                 throw new NotFoundException("Livro não encontrado: " + id);
             }

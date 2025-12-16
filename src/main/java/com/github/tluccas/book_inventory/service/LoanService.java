@@ -4,7 +4,8 @@ import org.springframework.stereotype.Service;
 
 import com.github.tluccas.book_inventory.database.model.Emprestimo.Loan;
 import com.github.tluccas.book_inventory.database.model.Emprestimo.LoanStatus;
-import com.github.tluccas.book_inventory.dto.CreateLoanReq;
+import com.github.tluccas.book_inventory.dto.Loan.CreateLoanReq;
+import com.github.tluccas.book_inventory.dto.Loan.UpdateLoanReq;
 import com.github.tluccas.book_inventory.exceptions.NotFoundException;
 
 import net.ravendb.client.documents.DocumentStore;
@@ -20,7 +21,7 @@ public class LoanService {
     private final BookService bookService;
     private final UserService userService;
     private final DocumentStore store;
-
+    private static final String LOAN_PREFIX = "loans/";
     public LoanService(DocumentStore store, BookService bookService, UserService userService){
         this.store = store;
         this.bookService = bookService;
@@ -67,10 +68,40 @@ public class LoanService {
     }
 
     public Loan findById(String id){
+        String fullId = LOAN_PREFIX + id;
+
         try (IDocumentSession session = store.openSession()) {
-            return session.load(Loan.class, id);
+            return session.load(Loan.class, fullId);
         }
     }
 
+    public Loan update(String id, UpdateLoanReq data) {
+        String fullId = LOAN_PREFIX + id;
+
+        try (IDocumentSession session = store.openSession()) {
+            Loan existingLoan = session.load(Loan.class, fullId);
+            if (existingLoan == null) {
+                throw new NotFoundException("Empréstimo não encontrado: " + id);
+            }
+
+            existingLoan.setStatus(LoanStatus.valueOf(data.status()));
+            session.saveChanges();
+            return existingLoan;
+        }
+    }
+
+    public void delete(String id) {
+        String fullId = LOAN_PREFIX + id;
+
+        try(IDocumentSession session = store.openSession()) {
+            Loan existingLoan = session.load(Loan.class, fullId);
+            if (existingLoan == null) {
+                throw new NotFoundException("Empréstimo não encontrado: " + id);
+            }
+
+            session.delete(existingLoan);
+            session.saveChanges();
+        }
+    }
     
 }

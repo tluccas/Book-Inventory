@@ -3,6 +3,7 @@ package com.github.tluccas.book_inventory.service;
 import org.springframework.stereotype.Service;
 
 import com.github.tluccas.book_inventory.database.model.User;
+import com.github.tluccas.book_inventory.dto.User.AllUsersRes;
 import com.github.tluccas.book_inventory.exceptions.NotFoundException;
 
 import net.ravendb.client.documents.DocumentStore;
@@ -14,6 +15,7 @@ import java.util.List;
 public class UserService {
     
     private final DocumentStore store;
+    private static final String USER_PREFIX = "users/";
 
     public UserService(DocumentStore store){
         this.store = store;
@@ -27,21 +29,27 @@ public class UserService {
         }
     }
 
-    public List<User> findAll(){
+     public AllUsersRes findAll(){
         try (IDocumentSession session = store.openSession()) {
-            return session.query(User.class).toList();
+            List<User> users = session.query(User.class).toList();
+            
+            return new AllUsersRes(users.size(), users);
         }
     }
 
     public User findById(String id){
+        String fullId = USER_PREFIX + id;
         try (IDocumentSession session = store.openSession()) {
-            return session.load(User.class, id);
+            return session.load(User.class, fullId);
         }
     }
 
     public User update(String id, User data) {
+
+        String fullId = USER_PREFIX + id;
+
         try (IDocumentSession session = store.openSession()) {
-            User existingUser = session.load(User.class, id);
+            User existingUser = session.load(User.class, fullId);
             if (existingUser == null) {
                 throw new NotFoundException("Usuário não encontrado: " + id);
             }
@@ -55,8 +63,10 @@ public class UserService {
     }
 
     public void delete(String id) {
+        String fullId = USER_PREFIX + id;
+
         try(IDocumentSession session = store.openSession()) {
-            User existingUser = session.load(User.class, id);
+            User existingUser = session.load(User.class, fullId);
             if (existingUser == null) {
                 throw new NotFoundException("Usuário não encontrado: " + id);
             }
