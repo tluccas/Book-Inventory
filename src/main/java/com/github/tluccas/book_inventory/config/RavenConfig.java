@@ -11,7 +11,7 @@ public class RavenConfig {
     @Bean
     public DocumentStore documentStore(){
         DocumentStore store = new DocumentStore();
-            store.setUrls(new String[]{"http://localhost:8080"}); // Server URL
+            store.setUrls(new String[]{"http://localhost:8088"}); // Server URL
             store.setDatabase("book_inventory_db"); // Banco de dados padrão
             store.initialize();
             return store;
