@@ -32,7 +32,7 @@ public class UserController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<User> postMethodName(@RequestBody User user) {
+    public ResponseEntity<User> createUser(@RequestBody User user) {
         User newUser = userService.create(user);
         
         return ResponseEntity.ok(newUser);
