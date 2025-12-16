@@ -37,9 +37,9 @@ public class LoanService {
             }
 
             List<BookOnLoan> booksToLoan = new ArrayList<>(); // Lista auxiliar para armazenar os livros válidos
-
-            for (BookOnLoan bookOnLoan : req.books()){   
-                String bookId = bookOnLoan.getBookId();
+            
+            for (BookOnLoan bookOnLoan : req.books()){  
+                String bookId = "books/" + bookOnLoan.getBookId();
 
                 if (bookService.findById(bookId) == null) {
                     throw new NotFoundException("Livro não encontrado: " + bookId);
